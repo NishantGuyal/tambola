@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Tambola Number Caller</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f8ff;
+        }
+
+        h1 {
+            font-size: 60px;
+            margin: 20px 0;
+            color: #333;
+        }
+
+        p {
+            font-size: 20px;
+            color: #555;
+        }
+
+        #history {
+            margin-top: 30px;
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 10px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .called-number {
+            background-color: #ffe680;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            padding: 10px;
+            font-size: 24px;
+            color: #333;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1 id="number">Press Enter</h1>
+    <p id="status">Numbers called: 0/90</p>
+    <div id="history"></div>
+
+    <script>
+        const numberDisplay = document.getElementById('number');
+        const statusDisplay = document.getElementById('status');
+        const historyDisplay = document.getElementById('history');
+
+        let remainingNumbers = Array.from({ length: 90 }, (_, i) => i + 1);
+        let calledNumbers = [];
+
+        function speakNumber(num) {
+            const msg = new SpeechSynthesisUtterance(`Number ${num}`);
+            msg.lang = 'en-IN';
+            msg.pitch = 1;
+            msg.rate = 0.9;
+            msg.volume = 1;
+            window.speechSynthesis.cancel(); // Stop any current speech
+            window.speechSynthesis.speak(msg);
+        }
+
+        function callNextNumber() {
+            if (remainingNumbers.length === 0) {
+                numberDisplay.textContent = "Game Over";
+                speakNumber("Game Over");
+                return;
+            }
+
+            const randomIndex = Math.floor(Math.random() * remainingNumbers.length);
+            const nextNumber = remainingNumbers.splice(randomIndex, 1)[0];
+            calledNumbers.push(nextNumber);
+
+            numberDisplay.textContent = nextNumber;
+            statusDisplay.textContent = `Numbers called: ${calledNumbers.length}/90`;
+
+            const numberBox = document.createElement('div');
+            numberBox.className = 'called-number';
+            numberBox.textContent = nextNumber;
+            historyDisplay.appendChild(numberBox);
+
+            speakNumber(nextNumber);
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                callNextNumber();
+            }
+        });
+    </script>
+
+</body>
+
+</html>
